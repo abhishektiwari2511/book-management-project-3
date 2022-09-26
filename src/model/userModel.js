@@ -6,9 +6,9 @@ var validateEmail = function (email) {
 };
 
 const userSchema= new mongoose.Schema({
-    title: {type: String, require :true, enum:["Mr", "Mrs", "Miss"],trim:true},
-    name: {type: String, require :true, trim:true},
-    phone: {type: String, require :true, unique:true, trim:true},
+    title: {type: String, required :true, enum:["Mr", "Mrs", "Miss"],trim:true},
+    name: {type: String, required :true, trim:true},
+    phone: {type: String, required :true, unique:true, trim:true},
     email: {
         type: String, required: true, trim: true, lowercase: true, unique: true,
         validate: [validateEmail, 'Please fill a valid email address'],

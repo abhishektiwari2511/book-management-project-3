@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken")
-const userModel = require("../Model/userModel")
+const userModel = require("../model/userModel")
 const { valid, regForName, regForTitle, regForEmail, regForMobileNo, regForPassword, isValidRequestBody } = require("../Validator/validate")
 
 
@@ -76,6 +76,7 @@ const login = async function (req, res) {
 
         //=====================Validation of Password=====================//
         if (!password) return res.status(400).send({ status: false, msg: "password is required" })
+        if (!regForPassword(password)) return res.status(400).send({ status: false, msg: "Please Enter Password With atleast one UpperCase,LowerCase,Number and special characters" })
 
         //===================== Checking User exsistance using Email and password=====================//
         const user = await userModel.findOne({ email: email, password: password })
@@ -90,6 +91,7 @@ const login = async function (req, res) {
         //===================== Decode Token Using JWT =====================//
         const decode = jwt.verify(token, "this is a private key")
 
+        
         res.setHeader("x-api-key", token)
         console.log(decode)
         console.log(decode.exp)
@@ -109,3 +111,4 @@ const login = async function (req, res) {
 
 module.exports.createUser = createUser
 module.exports.login = login
+// module.exports= {createUser, login};
