@@ -26,4 +26,4 @@ const userSchema= new mongoose.Schema({
     }
 },{timeStamps: true})
 
-module.exports= mongoose.model("UserCollection",userSchema)
+module.exports= mongoose.model("BookManagementUserCollection",userSchema)

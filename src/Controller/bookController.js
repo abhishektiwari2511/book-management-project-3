@@ -3,6 +3,7 @@ const reviewModel = require("../model/reviewModel")
 const { isValidRequestBody, valid } = require("../Validator/validate")
 const userModel = require("../model/userModel");
 const moment = require("moment");
+const aws=require("aws-sdk") //AWS
 
 const createBooks = async function (req, res) {
     try {
@@ -40,7 +41,7 @@ const getAllBook = async function (req, res) {
         findBooks.sort(function (a, b) {
             return a.title.localeCompare(b.title)
         })
-        if (findBooks && findBooks.length == 0) {
+        if (!findBooks && findBooks.length == 0) {
             return res.status(404).send({ status: false, message: "Books not found" })
         }
         return res.status(200).send({ status: true, message: "Books list", data: findBooks })
@@ -89,14 +90,14 @@ const updateBookbyId = async function (req, res) {
             if (!(/^[a-zA-Z0-9\s\-,?_.]+$/).test(title)) return res.status(400).send({ status: false, message: "format of title is wrong!!!" });
             if (!valid(title)) return res.status(400).send({ status: false, message: "invalid title details" });
             let findTitle = await bookModel.findOne({ title: title })
-            if (findTitle) return res.status(400).send({ status: false, message: "title already exist" })
+            if (findTitle) return res.status(409).send({ status: false, message: "title already exist" })
 
         }
         //=====================Validation of ISBN=====================//
         if (ISBN) {
             if (!(/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/).test(ISBN)) return res.status(400).send({ status: false, message: "enter valid ISBN number" });
             let findISBN = await bookModel.findOne({ ISBN: ISBN })
-            if (findISBN) return res.status(400).send({ status: false, message: "ISBN already exist" })
+            if (findISBN) return res.status(409).send({ status: false, message: "ISBN already exist" })
         }
 
         //=====================Validation of releasedAt=====================//
@@ -146,10 +147,77 @@ const deletebyId = async function(req, res) {
     }
 }
 
+// aws.config.update({
+//     accessKeyId: "AKIAY3L35MCRVFM24Q7U",
+//     secretAccessKeyId: "qGG1HE0qRixcW1T1Wg1bv+08tQrIkFVyDFqSft4J",
+//     region: "ap-south-1"
+// })
+// =======================================AWS==========================
+aws.config.update({
+    accessKeyId: "AKIAY3L35MCRZNIRGT6N",
+    // secretAccessKeyId: "9f+YFBVcSjZWM6DG9R4TUN8k8TGe4X+lXmO4jPiU",
+    secretAccessKey: "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",
+    region: "ap-south-1"
+})
 
+
+let uploadFile= async ( file) =>{
+   return new Promise( function(resolve, reject) {
+    // this function will upload file to aws and return the link
+    let s3= new aws.S3({apiVersion: '2006-03-01'}); // we will be using the s3 service of aws
+
+    var uploadParams= {
+        ACL: "public-read",
+        Bucket: "classroom-training-bucket",  //HERE
+        Key: "Group15/" + file.originalname, //HERE 
+        Body: file.buffer
+    }
+
+
+    s3.upload( uploadParams, function (err, data ){
+        if(err) {
+            return reject({"error": err})
+        }
+        console.log(data)
+        console.log("file uploaded succesfully")
+        return resolve(data.Location)
+    })
+
+    // let data= await s3.upload( uploadParams)
+    // if( data) return data.Location
+    // else return "there is an error"
+
+   })
+}
+
+const awsLink= async function(req, res){
+    try{
+        let bookId=req.params.bookId
+        let files= req.files
+        if(files && files.length>0){
+            //upload to s3 and get the uploaded link
+            // res.send the link back to frontend/postman
+            let uploadedFileURL= await uploadFile( files[0] )
+            let updatedBook = await bookModel.findByIdAndUpdate(bookId, { BookCover: uploadedFileURL }, { new: true })
+            // console.log(uploadedFileURL)
+            // console.log(updatedBook)
+        res.status(201).send({msg: "file uploaded succesfully", data: uploadedFileURL, updatedBook: updatedBook})
+        }
+        else{
+            res.status(400).send({ msg: "No file found" })
+        }
+        
+    }
+    catch(err){
+        res.status(500).send({msg: err})
+    }
+}
+
+    // ======================================
 module.exports.createBooks = createBooks
 module.exports.getAllBook = getAllBook
 module.exports.getBooksByPathParam = getBooksByPathParam
 module.exports.updateBookbyId = updateBookbyId
 module.exports.deletebyId = deletebyId
+module.exports.awsLink=awsLink
 // module.exports={createBooks,getAllBook,getBooksByPathParam, updateBookbyId,deletebyId};

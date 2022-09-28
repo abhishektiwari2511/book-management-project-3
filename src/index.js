@@ -6,13 +6,15 @@ const { default: mongoose } = require('mongoose');
 const moment = require('moment');
 const app = express();
 
+const multer= require("multer");
+app.use( multer().any())
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
 
-mongoose.connect("mongodb+srv://BittuMishra:ZsLbBdUnCK.2jta@cluster0.2v1vzde.mongodb.net/Project3group15Database?retryWrites=true&w=majority", {
+mongoose.connect("mongodb+srv://syguru82sun:Roll123@cluster0.btfeueg.mongodb.net/guru123", {
     useNewUrlParser: true
 })
     .then(() => console.log("MongoDb is Connected."))

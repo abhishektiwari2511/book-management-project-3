@@ -11,4 +11,4 @@ const reviewSchema= new mongoose.Schema(
     isDeleted: {type:Boolean, default: false}
   },{timestamps:true})
 
-  module.exports= mongoose.model("reviews",reviewSchema)
+  module.exports= mongoose.model("BookManagementreviews",reviewSchema)

@@ -1,6 +1,8 @@
 //=====================Importing Module and Packages=====================//
 const express = require('express');
 const router = express.Router();
+
+
 const UserController = require("../Controller/userController");
 const bookController = require("../Controller/bookController")
 // const {createUser,login} = require("../Controller/userController");
@@ -17,9 +19,11 @@ router.get("/books", bookController.getAllBook);
 router.get("/books/:bookId", bookController.getBooksByPathParam);
 router.put("/books/:bookId",bookController.updateBookbyId);
 router.delete("/books/:bookId",authentication,authorisation, bookController.deletebyId);
-router.post("/books/:bookId/review",authentication,authorisation, reviewController.createReview);
-router.put("/books/:bookId/review/:reviewId",authentication,authorisation, reviewController.updateReviewByBookId);
-router.delete("/books/:bookId/review/:reviewId",authentication,authorisation, reviewController.deletebyreviewId);
+router.post("/books/:bookId/review", reviewController.createReview);
+router.put("/books/:bookId/review/:reviewId", reviewController.updateReviewByBookId);
+router.delete("/books/:bookId/review/:reviewId", reviewController.deletebyreviewId);
+
+router.post("/books/aws/:bookId", bookController.awsLink);
 
 
 

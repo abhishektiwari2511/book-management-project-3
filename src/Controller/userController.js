@@ -37,8 +37,8 @@ const createUser = async function (req, res) {
         if (duplicateMobile) return res.status(400).send({ status: false, message: "Mobile No. already exists!" });
 
         //=====================Validation of Email=====================//
-        if (!email) return res.status(400).send({ status: false, message: "phone is required" })
-        if (!(valid(email))) return res.status(400).send({ status: false, msg: "Provide a valid phone" })
+        if (!email) return res.status(400).send({ status: false, message: "Email is required" })
+        if (!(valid(email))) return res.status(400).send({ status: false, msg: "Provide a valid Email" })
         if (!regForEmail(email)) return res.status(400).send({ status: false, msg: "Enter Valid Email" })
 
         //=====================Checking the Duplication of Email=====================//
@@ -47,8 +47,8 @@ const createUser = async function (req, res) {
 
 
         //=====================Validation of Password=====================//
-        if (!password) return res.status(400).send({ status: false, message: "phone is required" })
-        if (!(valid(password))) return res.status(400).send({ status: false, msg: "Provide a valid phone" })
+        if (!password) return res.status(400).send({ status: false, message: "Password is required" })
+        if (!(valid(password))) return res.status(400).send({ status: false, msg: "Provide a valid Password" })
         if (!regForPassword(password)) return res.status(400).send({ status: false, msg: "Please Enter Password With atleast one UpperCase,LowerCase,Number and special characters" })
 
         //=====================User Data Creation=====================//
@@ -100,7 +100,7 @@ const login = async function (req, res) {
         let iatdate = new Date(parseInt(decode.iat) * 1000)
         console.log(expdate)
         console.log(iatdate)
-        res.status(200).send({ status: true, message: 'Success', data: token })
+        res.status(200).send({ status: true, message: 'Success', data: token,expdate:expdate, iatdate:iatdate})
     }
     catch (error) {
         return res.status(500).send({ status: false, message: error.message })
