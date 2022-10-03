@@ -72,21 +72,25 @@ const login = async function (req, res) {
 
         //=====================Validation of EmailID=====================//
         if (!email) return res.status(400).send({ status: false, msg: "email is required" })
-        if (!regForEmail(email)) return res.status(400).send({ status: false, msg: "Please Enter Valid Email ID" })
-
+        
         //=====================Validation of Password=====================//
         if (!password) return res.status(400).send({ status: false, msg: "password is required" })
-        if (!regForPassword(password)) return res.status(400).send({ status: false, msg: "Please Enter Password With atleast one UpperCase,LowerCase,Number and special characters" })
-
+       
         //===================== Checking User exsistance using Email and password=====================//
         const user = await userModel.findOne({ email: email, password: password })
         if (!user) return res.status(401).send({ status: false, msg: "Email or Password Invalid Please try again !!" })
 
         //===================== Creating Token Using JWT =====================//
+        // const token = jwt.sign({
+        //     userId: user._id.toString(),
+        //     batch: "plutonium",
+        // }, "this is a private key", { expiresIn: '1d' })
         const token = jwt.sign({
             userId: user._id.toString(),
             batch: "plutonium",
-        }, "this is a private key", { expiresIn: '1d' })
+            iat: Math.floor(Date.now() / 1000),
+            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24
+        }, "this is a private key")
 
         //===================== Decode Token Using JWT =====================//
         const decode = jwt.verify(token, "this is a private key")

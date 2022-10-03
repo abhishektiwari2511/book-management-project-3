@@ -55,7 +55,7 @@ const createReview = async function (req, res) {
         }
        
         let updatedBook = await bookModel.findOneAndUpdate({ _id: id }, { $inc: { reviews: +1 } }, { new: true })
-        
+        data.bookId=id
         const reviews = await reviewModel.create(data);
         let obj ={}
          obj = {updatedBook,reviews}
